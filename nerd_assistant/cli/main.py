@@ -5,7 +5,6 @@ Implementation of the nerd_assistant command line interface.
 import os
 
 import openai
-
 import typer
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler
@@ -23,8 +22,13 @@ async def chatgpt_answer(update: Update, _) -> None:
     message = update.message["text"]
     assert isinstance(message, str)
 
+    question = message.replace("/kurva", "").strip()
+    if not question:
+        await update.message.reply_text("?")
+        return
+
     try:
-        ai_answer = get_chat().ask(message.replace("/kurva", "").strip())
+        ai_answer = get_chat().ask(question)
         await update.message.reply_text(ai_answer)
 
     except Exception as e:
@@ -39,8 +43,13 @@ async def davinci_answer(update: Update, _) -> None:
     message = update.message["text"]
     assert isinstance(message, str)
 
+    question = message.replace("/smrad", "").strip()
+    if not question:
+        await update.message.reply_text("?")
+        return
+
     try:
-        await update.message.reply_text(ask_davinci(message.replace("/smrad", "").strip()))
+        await update.message.reply_text(ask_davinci(question))
     except Exception as e:
         print(e)
         await update.message.reply_text("You broke the AI 💀")
@@ -56,6 +65,10 @@ def start() -> None:
     openai.api_key = openai_api_key
 
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+
+    # initialize chat.
+    get_chat()
+
     bot = ApplicationBuilder().token(token).build()
 
     bot.add_handler(CommandHandler("kurva", chatgpt_answer))
