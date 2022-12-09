@@ -64,7 +64,7 @@ release = "bump2version"
 addopts = "--mypy --black --isort --pylint --cov=nerd_assistant"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 typer = "^0.7.0"
 chatgptpy = "^1.0.5"
 python-telegram-bot = "20.0a0"
