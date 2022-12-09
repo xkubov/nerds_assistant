@@ -24,7 +24,7 @@ async def chatgpt_answer(update: Update, _) -> None:
     assert isinstance(message, str)
 
     try:
-        ai_answer = get_chat().ask(message.replace("/kurva", ""))
+        ai_answer = get_chat().ask(message.replace("/kurva", "").strip())
         await update.message.reply_text(ai_answer)
 
     except Exception as e:
@@ -40,7 +40,7 @@ async def davinci_answer(update: Update, _) -> None:
     assert isinstance(message, str)
 
     try:
-        await update.message.reply_text(ask_davinci(message.replace("/smrad", "")))
+        await update.message.reply_text(ask_davinci(message.replace("/smrad", "").strip()))
     except Exception as e:
         print(e)
         await update.message.reply_text("You broke the AI 💀")
