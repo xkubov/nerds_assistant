@@ -65,6 +65,7 @@ python = "^3.9"
 typer = "^0.7.0"
 chatgptpy = "^1.0.5"
 python-telegram-bot = "20.0a0"
+openai = "^0.25.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"

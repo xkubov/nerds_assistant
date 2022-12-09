@@ -1,7 +1,24 @@
 import os
 from functools import lru_cache
 
+import openai
 from pychatgpt import Chat, Options
+
+
+def ask_davinci(prompt: str) -> str:
+    """
+    Asks davinci question.
+    """
+
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=1024,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+    return response["choices"][0]["text"]
 
 
 @lru_cache()
