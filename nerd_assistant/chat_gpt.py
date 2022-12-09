@@ -1,11 +1,14 @@
 import os
-
 from functools import lru_cache
+
 from pychatgpt import Chat, Options
 
 
 @lru_cache()
 def get_chat() -> Chat:
+    """
+    Create new chat with AI.
+    """
     options = Options()
 
     # Track conversation

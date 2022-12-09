@@ -6,24 +6,24 @@ import os
 
 import typer
 from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-)
+from telegram.ext import ApplicationBuilder, CommandHandler
 
 from nerd_assistant.chat_gpt import get_chat
-
 
 app = typer.Typer()
 
 
 async def answer(update: Update, _) -> None:
+    """
+    Answer question of user.
+    """
+
     message = update.message["text"]
     assert isinstance(message, str)
 
     try:
-        answer = get_chat().ask(message.replace("/kurva", ""))
-        await update.message.reply_text(answer)
+        ai_answer = get_chat().ask(message.replace("/kurva", ""))
+        await update.message.reply_text(ai_answer)
 
     except Exception as e:
         print(e)
@@ -32,8 +32,12 @@ async def answer(update: Update, _) -> None:
 
 @app.command(help="Run bot")
 def start() -> None:
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
-    app = ApplicationBuilder().token(token).build()
+    """
+    Starts the bot.
+    """
 
-    app.add_handler(CommandHandler("kurva", answer))
-    app.run_polling()
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    bot = ApplicationBuilder().token(token).build()
+
+    bot.add_handler(CommandHandler("kurva", answer))
+    bot.run_polling()
