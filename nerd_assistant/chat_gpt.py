@@ -22,7 +22,7 @@ def ask_davinci(prompt: str) -> str:
 
 
 @lru_cache()
-def get_chat() -> Chat:
+def get_chat(unique_id: str) -> Chat:
     """
     Create new chat with AI.
     """
@@ -33,8 +33,8 @@ def get_chat() -> Chat:
 
     # Optionally, you can pass a file path to save the conversation
     # They're created if they don't exist
-    options.chat_log = "chat_log.txt"
-    options.id_log = "id_log.txt"
+    options.chat_log = f"chat_log_{unique_id}.txt"
+    options.id_log = f"id_log_{unique_id}.txt"
 
     email = os.getenv("OPENAI_EMAIL", "")
     password = os.getenv("OPENAI_PASSWORD", "")

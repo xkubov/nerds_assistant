@@ -28,7 +28,7 @@ async def chatgpt_answer(update: Update, _) -> None:
         return
 
     try:
-        ai_answer = get_chat().ask(question)
+        ai_answer = get_chat(update.message["from"]["username"]).ask(question)
         await update.message.reply_text(ai_answer)
 
     except Exception as e:
@@ -65,9 +65,6 @@ def start() -> None:
     openai.api_key = openai_api_key
 
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
-
-    # initialize chat.
-    get_chat()
 
     bot = ApplicationBuilder().token(token).build()
 
