@@ -1,12 +1,7 @@
 FROM python:3.10
 
-RUN apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get -y install \
-		rustc && \
-	rm -rf /var/lib/apt/lists/*
-
-# Install pinned poetry version.
-RUN pip install 'poetry==1.3.1'
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > r.sh && sh r.sh -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Copying this first will improve caching and re-runs.
 COPY poetry.lock pyproject.toml /app/
