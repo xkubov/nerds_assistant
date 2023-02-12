@@ -4,7 +4,6 @@ Implementation of the nerd_assistant command line interface.
 
 import os
 
-import openai
 import typer
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
@@ -56,9 +55,6 @@ def start() -> None:
     """
     Starts the bot.
     """
-
-    openai_api_key = os.getenv("OPENAI_API_KEY", "")
-    openai.api_key = openai_api_key
 
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
