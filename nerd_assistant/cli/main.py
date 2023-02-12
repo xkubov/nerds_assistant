@@ -7,9 +7,9 @@ import os
 import openai
 import typer
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 
-from nerd_assistant.chat_gpt import ask_davinci, get_chat
+from nerd_assistant.chat_gpt import get_chat
 
 app = typer.Typer()
 
@@ -23,36 +23,32 @@ async def chatgpt_answer(update: Update, _) -> None:
     assert isinstance(message, str)
 
     question = message.replace("/kurva", "").strip()
+
     if not question:
         await update.message.reply_text("?")
         return
 
     try:
-        ai_answer = get_chat(update.message["from"]["username"]).ask(question)
-        await update.message.reply_text(ai_answer)
+        response = ""
+        chatbot = get_chat()
+        async for line in chatbot.ask(question):
+            response += line["choices"][0]["text"].replace("<|im_end|>", "")
+
+        await update.message.reply_text(response)
 
     except Exception as e:
         print(e)
         await update.message.reply_text("You broke the AI 💀")
 
 
-async def davinci_answer(update: Update, _) -> None:
-    """
-    Uses Davinci to answer.
-    """
-    message = update.message["text"]
-    assert isinstance(message, str)
-
-    question = message.replace("/smrad", "").strip()
-    if not question:
-        await update.message.reply_text("?")
-        return
-
-    try:
-        await update.message.reply_text(ask_davinci(question))
-    except Exception as e:
-        print(e)
-        await update.message.reply_text("You broke the AI 💀")
+async def handler(update: Update, context) -> None:
+    """Telegram handler. Checks for activation words."""
+    activation_words = ["kurva", "smrad", "preco", "prečo", "proc", "proč", "why", "?"]
+    message = update.message["text"].lower()
+    for word in activation_words:
+        if word in message:
+            await chatgpt_answer(update, context)
+            return
 
 
 @app.command(help="Run bot")
@@ -68,6 +64,7 @@ def start() -> None:
 
     bot = ApplicationBuilder().token(token).build()
 
-    bot.add_handler(CommandHandler("kurva", chatgpt_answer))
-    bot.add_handler(CommandHandler("smrad", davinci_answer))
+    bot.add_handler(CommandHandler("smrad", chatgpt_answer))
+    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handler))
+
     bot.run_polling()
